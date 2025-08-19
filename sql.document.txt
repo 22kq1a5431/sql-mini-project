@@ -1,0 +1,98 @@
+Library Management System 
+The Library Management System is designed using SQL to manage books, members, and issued books. It demonstrates database creation, table relationships, triggers, stored procedures, and SQL queries for common operations.
+Database Schema
+The LibraryDB database consists of the following tables:
+1. Books – Stores details about books.
+2. Members – Stores member information.
+3. IssuedBooks – Tracks books issued to members.
+4. log_table – Logs book insertion activities (used by trigger).
+Table	Description
+Books	Book details such as title, author, price, quantity, and ISBN
+Members	Member details including name, email, phone, and address
+IssuedBooks	Tracks which member borrowed which book and return date
+log_table	Stores log messages after book insertions
+Database Structure and Code
+1. Database and Tables
+CREATE DATABASE LibraryDB;
+USE LibraryDB;
+
+CREATE TABLE Books (
+    BookID INT PRIMARY KEY,
+    Title VARCHAR(100),
+    Author VARCHAR(100),
+    Publisher VARCHAR(100),
+    Price DECIMAL(8,2),
+    Quantity INT,
+    ISBN VARCHAR(20)
+);
+
+CREATE TABLE Members (
+    MemberID INT PRIMARY KEY,
+    Name VARCHAR(100),
+    Email VARCHAR(100),
+    Phone VARCHAR(15),
+    Address VARCHAR(200)
+);
+
+CREATE TABLE IssuedBooks (
+    IssueID INT PRIMARY KEY,
+    BookID INT,
+    MemberID INT,
+    IssueDate DATE,
+    ReturnDate DATE,
+    FOREIGN KEY (BookID) REFERENCES Books(BookID),
+    FOREIGN KEY (MemberID) REFERENCES Members(MemberID)
+);
+
+CREATE TABLE log_table (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    message VARCHAR(255)
+);
+2. Insert Records
+INSERT INTO Books VALUES (1, 'SQL Basics', 'John Smith', 'TechPress', 500, 10, 'ISBN12345');
+INSERT INTO Books VALUES (2, 'Database Design', 'Jane Doe', 'DBPress', 650, 8, 'ISBN67890');
+INSERT INTO Books VALUES (3, 'Advanced SQL', 'Robert Brown', 'SQLWorld', 750, 5, 'ISBN54321');
+INSERT INTO Members VALUES (1, 'RAM', 'ram@gmail.com', '9876543210', 'Hyderabad');
+INSERT INTO Members VALUES (2, 'NITHIN', 'nithin@gmail.com', '9876543222', 'Delhi');
+3. Update and Delete
+UPDATE Books SET Quantity = 12 WHERE BookID = 1;
+DELETE FROM Members WHERE MemberID = 2;
+4. Queries
+Books priced above 300
+SELECT * FROM Books WHERE Price > 300;
+Total number of books
+SELECT COUNT(*) AS TotalBooks FROM Books;
+Average price of books
+SELECT AVG(Price) AS AvgPrice FROM Books;
+Authors with more than one book
+SELECT Author, COUNT() FROM Books GROUP BY Author HAVING COUNT() > 1;
+Books containing 'SQL' in title
+SELECT * FROM Books WHERE Title LIKE '%SQL%';
+Book with maximum price
+SELECT * FROM Books WHERE Price = (SELECT MAX(Price) FROM Books);
+5. Stored Procedure
+DELIMITER //
+CREATE PROCEDURE GetBookDetails()
+BEGIN
+    SELECT * FROM Books;
+END //
+DELIMITER ;
+6. Trigger
+DELIMITER //
+CREATE TRIGGER after_book_insert
+AFTER INSERT ON Books
+FOR EACH ROW
+BEGIN
+    INSERT INTO log_table (message) VALUES ('New book added');
+END //
+DELIMITER ;
+Sample Queries Demonstrated
+Simple Queries: Filtering books by price, finding books by title.
+ Aggregate Functions: Count of books, average price.
+Subqueries: Book with the highest price.
+Joins (Optional Extension): Issued books with member details.
+ Procedures & Triggers: Automating tasks after book insertion
+Conclusion
+The Library Management System demonstrates how SQL can be used to design and manage a real-world library database.
+It covers database design, table relationships, aggregate queries, stored procedures, and triggers.
+This project can be extended into a full application by integrating with a frontend and backend for complete library automation.
